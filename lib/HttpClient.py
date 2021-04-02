@@ -15,8 +15,8 @@ class HttpClient:
             response = requests.get(url)
             response.raise_for_status()
         except HTTPError as http_error:
-            raise HttpClientError('Request error: {}'.format(print(http_error)))
+            raise HttpClientError('Get request error: {}'.format(http_error))
         except Exception as error:
-            raise HttpClientError('Request error: {}'.format(print(error)))
+            raise HttpClientError('Get request error: {}'.format(error))
 
         return response
