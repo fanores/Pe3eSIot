@@ -5,8 +5,8 @@ from lib.IotError import HttpClientError
 
 
 class HttpClient:
-    @staticmethod
-    def get_request(url):
+
+    def get_request(self, url):
         """
             Get Request: returns the response of the request call
         :return: request response
