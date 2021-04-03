@@ -26,7 +26,8 @@ class TestHttpClient:
             mock_request.return_value = fake_response
 
             # WHEN
-            actual_response = HttpClient.get_request(called_url)
+            http_client = HttpClient()
+            actual_response = http_client.get_request(called_url)
 
             # THEN
             assert actual_response.status_code == 200
@@ -49,7 +50,8 @@ class TestHttpClient:
             mock_request.return_value = fake_response
 
             # WHEN
-            actual_response = HttpClient.get_request(called_url)
+            http_client = HttpClient()
+            http_client.get_request(called_url)
 
             # THEN
             mock_request.assert_called_once_with(called_url)
@@ -71,13 +73,14 @@ class TestHttpClient:
             mock_request.return_value = fake_response
 
             # WHEN
-            actual_response = HttpClient.get_request(called_url)
+            http_client = HttpClient()
+            actual_response = http_client.get_request(called_url)
 
             # THEN
             assert actual_response.raise_for_status_has_no_error is True
 
     def test_response_raises_exception_on_http_error(self):
-        with pytest.raises(HttpClientError, match=r'.* HTTPError .*') as http_client_error:
+        with pytest.raises(HttpClientError, match=r'.* HTTPError .*'):
             with patch('requests.get') as mock_request:
                 class FakeResponse(object):
                     status_code = 200
@@ -94,13 +97,14 @@ class TestHttpClient:
                 mock_request.return_value = fake_response
 
                 # WHEN
-                actual_response = HttpClient.get_request(called_url)
+                http_client = HttpClient()
+                http_client.get_request(called_url)
 
                 # THEN
                 # HttpClientError exception was raised
 
     def test_response_raises_exception_on_exception(self):
-        with pytest.raises(HttpClientError, match=r'.* ExceptionError .*') as http_client_error:
+        with pytest.raises(HttpClientError, match=r'.* ExceptionError .*'):
             with patch('requests.get') as mock_request:
                 class FakeResponse(object):
                     status_code = 200
@@ -117,7 +121,8 @@ class TestHttpClient:
                 mock_request.return_value = fake_response
 
                 # WHEN
-                actual_response = HttpClient.get_request(called_url)
+                http_client = HttpClient()
+                http_client.get_request(called_url)
 
                 # THEN
                 # HttpClientError exception was raised
