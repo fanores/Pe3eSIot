@@ -109,7 +109,7 @@ class TestHttpClient:
 
                     def raise_for_status(self):
                         self.raise_for_status_has_no_error = False
-                        raise HTTPError('ExceptionError raised')
+                        raise Exception('ExceptionError raised')
 
                 # GIVEN
                 called_url = 'http://myapi.com'
