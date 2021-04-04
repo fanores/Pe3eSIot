@@ -3,7 +3,7 @@ Pe3eS - Internet of Things
 
 # Install package
 ```
-pip install requirements
+pip install -r requirements
 ```
 
 # Run Tests
