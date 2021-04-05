@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/fanores/Pe3eSIot.svg?branch=master)](https://travis-ci.com/fanores/Pe3eSIot)
+
 # Pe3eSIot
 Pe3eS - Internet of Things
 
