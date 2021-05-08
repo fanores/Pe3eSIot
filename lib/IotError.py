@@ -11,3 +11,10 @@ class HttpClientError(IotError):
 
 	def __init__(self, message):
 		self.message = message
+
+
+class XmlParserError(IotError):
+	"""Exceptions raised for XML parsing errors."""
+
+	def __init__(self, message):
+		self.message = message
