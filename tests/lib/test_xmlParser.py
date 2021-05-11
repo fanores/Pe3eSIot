@@ -1,6 +1,6 @@
 import pytest
-from unittest.mock import patch
-from xml.etree.cElementTree import Element, SubElement
+from unittest.mock import Mock, patch
+from xml.etree.cElementTree import Element, SubElement, ParseError
 from lib.XmlParser import XmlParser
 from collections import defaultdict
 from lib.IotError import XmlParserError
@@ -31,3 +31,18 @@ class TestXmlParser:
 			# THEN
 			assert elements == expected_elements
 			mock_element_tree.assert_called_once_with(xml)
+
+	def test_from_string_raises_exception_on_parse_error(self):
+		with pytest.raises(XmlParserError):
+			with patch('xml.etree.ElementTree.fromstring') as mock_element_tree:
+				# GIVEN
+				mock_element_tree.side_effect = ParseError()
+				# Input XML that is going to be processed
+				xml = '<root><child1>text1</child1></root>'
+
+				# WHEN
+				xml_parser = XmlParser()
+				elements = xml_parser.parse_root_child_elements_into_dictionary(xml)
+
+				# THEN
+				# XmlParserError exception was raised
