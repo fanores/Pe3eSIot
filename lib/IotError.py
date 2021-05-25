@@ -18,3 +18,10 @@ class XmlParserError(IotError):
 
 	def __init__(self, message):
 		self.message = message
+
+
+class FileProcessorError(IotError):
+	"""Exceptions raised for File processing errors."""
+
+	def __init__(self, message):
+		self.message = message
