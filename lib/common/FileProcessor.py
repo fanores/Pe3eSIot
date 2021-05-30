@@ -1,5 +1,5 @@
 """File Processor"""
-from lib.IotError import FileProcessorError
+from lib.common.IotError import FileProcessorError
 
 
 class FileProcessor:

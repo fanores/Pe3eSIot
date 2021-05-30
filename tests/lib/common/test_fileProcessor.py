@@ -1,8 +1,7 @@
 import pytest
-import unittest
 from unittest.mock import patch, mock_open
-from lib.FileProcessor import FileProcessor
-from lib.IotError import FileProcessorError
+from lib.common.FileProcessor import FileProcessor
+from lib.common.IotError import FileProcessorError
 
 
 class TestFileProcessor:

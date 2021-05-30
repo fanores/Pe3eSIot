@@ -1,8 +1,8 @@
-"""FVE ThingSpeak - Upload"""
-from lib.HttpClient import HttpClient
-from lib.IotError import HttpClientError
-from lib.XmlParser import XmlParser
-from lib.IotError import XmlParserError
+"""DEMO - XML Parser"""
+from lib.common import HttpClient
+from lib.common.IotError import HttpClientError
+from lib.common import XmlParser
+from lib.common.IotError import XmlParserError
 from datetime import datetime
 
 
