@@ -1,9 +1,9 @@
 import pytest
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 from xml.etree.cElementTree import Element, SubElement, ParseError
-from lib.XmlParser import XmlParser
+from lib.common.XmlParser import XmlParser
 from collections import defaultdict
-from lib.IotError import XmlParserError
+from lib.common.IotError import  XmlParserError
 
 class TestXmlParser:
 

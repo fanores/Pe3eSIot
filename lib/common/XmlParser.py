@@ -2,7 +2,7 @@
 import xml.etree.ElementTree as ElementTree
 from xml.etree.ElementTree import ParseError
 from collections import defaultdict
-from lib.IotError import XmlParserError
+from lib.common.IotError import XmlParserError
 
 
 class XmlParser:
