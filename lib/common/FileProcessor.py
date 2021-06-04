@@ -17,7 +17,7 @@ class FileProcessor:
         try:
             file = open(str(self.file), 'a+')
         except FileNotFoundError as error:
-            raise FileProcessorError(print(error))
+            raise FileProcessorError('File Processor error: {}'.format(error))
 
         file.write(line + "\n")
         file.close()
