@@ -25,3 +25,9 @@ class FileProcessorError(IotError):
 
 	def __init__(self, message):
 		self.message = message
+
+class FveRestApiError(IotError):
+	"""Exceptions raised for FVE REST API"""
+
+	def __init__(self, message):
+		self.message = message
