@@ -18,7 +18,7 @@ class XmlParser:
         try:
             root_element = ElementTree.fromstring(xml)
         except ParseError as error:
-            raise XmlParserError(print(error))
+            raise XmlParserError('XML Parser error: {}'.format(error))
 
         for child_element in root_element:
             child_elements[child_element.tag] = child_element.text
