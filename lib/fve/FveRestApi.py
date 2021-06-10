@@ -32,6 +32,8 @@ class FveRestApi:
 		except HttpClientError as error:
 			raise FveRestApiError(error.message)
 
+		return response
+
 	# retrieve FVE actual measurements
 	def get_actual_measurements(self):
 		"""
