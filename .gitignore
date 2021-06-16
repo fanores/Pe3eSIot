@@ -6,6 +6,7 @@ __pycache__/
 
 # Virtual Environment
 venv/
+tutorial-env/
 
 # Coverage
 .coverage
