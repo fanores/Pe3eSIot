@@ -31,3 +31,9 @@ class FveRestApiError(IotError):
 
 	def __init__(self, message):
 		self.message = message
+
+class FveFileReporterError(IotError):
+	"""Exceptions raised for FVE FILE WRITER"""
+
+	def __init__(self, message):
+		self.message = message
