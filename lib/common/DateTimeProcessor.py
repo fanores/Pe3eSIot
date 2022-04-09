@@ -1,8 +1,8 @@
-""" Date and Time"""
+""" Date and Time Processor"""
 from datetime import datetime
 
 
-class DateTime:
+class DateTimeProcessor:
 
     # constructor
     def __init__(self, defined_now):
@@ -16,19 +16,19 @@ class DateTime:
         :return: date as string
         """
 
-        return self.now.strftime("%m" + delimiter + "%d" + delimiter + "%Y")
+        return self.now.strftime("%-d" + delimiter + "%-m" + delimiter + "%Y")
 
     # returns time for a datetime object as a string
-    def get_time(self, include_seconds: True):
+    def get_time(self, include_seconds=True):
         """
             Get Time: returns the time in a string format
         :return: time as string
         """
 
         if include_seconds:
-            return self.now.strftime("%H:%M:%S")
+            return self.now.strftime("%-H:%-M:%-S")
         else:
-            return self.now.strftime("%H:%M")
+            return self.now.strftime("%-H:%-M")
 
     # returns full weekday name
     def get_full_weekday_name(self):
