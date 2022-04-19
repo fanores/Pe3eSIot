@@ -5,9 +5,9 @@ from datetime import datetime
 class DateTimeProcessor:
 
     # constructor
-    def __init__(self, defined_now):
+    def __init__(self, now):
 
-        self.now = defined_now
+        self.now = now
 
     # returns date for a datetime object as a string
     def get_date(self, delimiter="."):
@@ -17,6 +17,10 @@ class DateTimeProcessor:
         """
 
         return self.now.strftime("%-d" + delimiter + "%-m" + delimiter + "%Y")
+
+    # set date and time for DateTimeProcessor
+    def set_date_time(self, now):
+        self.now = now
 
     # returns time for a datetime object as a string
     def get_time(self, include_seconds=True):
