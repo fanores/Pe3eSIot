@@ -49,6 +49,18 @@ class TestDateTime:
 		# THEN
 		assert time_as_string == '6:3'
 
+	def test_set_date_time(self):
+		# GIVEN
+		mocked_constructor_now = datetime(2022, 4, 9, 21, 43, 21)
+		mocked_set_now = datetime(2022, 11, 11, 19, 12, 21)
+
+		# WHEN
+		date_time_processor = DateTimeProcessor(mocked_constructor_now)
+		date_time_processor.set_date_time(mocked_set_now)
+
+		# THEN
+		assert date_time_processor.now == mocked_set_now
+
 	def test_get_full_weekday_name(self):
 		# GIVEN
 		mocked_now = datetime(2022, 4, 9, 6, 3, 21)
