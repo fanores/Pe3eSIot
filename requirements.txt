@@ -16,3 +16,4 @@ pytest-cov==2.11.1
 requests==2.25.1
 toml==0.10.2
 urllib3==1.26.4
+pyowm~=3.3.0
