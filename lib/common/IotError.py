@@ -26,14 +26,24 @@ class FileProcessorError(IotError):
 	def __init__(self, message):
 		self.message = message
 
+
 class FveRestApiError(IotError):
 	"""Exceptions raised for FVE REST API"""
 
 	def __init__(self, message):
 		self.message = message
 
+
 class FveFileReporterError(IotError):
 	"""Exceptions raised for FVE FILE WRITER"""
 
 	def __init__(self, message):
 		self.message = message
+
+
+class OwmManagerError(IotError):
+	"""Exceptions raised for OPEN WEATHER MAP MANAGER"""
+
+	def __init__(self, message):
+		self.message = message
+
