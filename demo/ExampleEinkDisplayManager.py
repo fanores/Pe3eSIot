@@ -2,11 +2,10 @@
 # -*- coding:utf-8 -*-
 
 """DEMO - E-ink Display Manager"""
-import sys
 import os
 
 import logging
-from ext.waveshare_epd import epd2in13b_V3
+from lib.waveshare_epd import epd2in13b_V3
 import time
 from PIL import Image, ImageDraw, ImageFont
 
