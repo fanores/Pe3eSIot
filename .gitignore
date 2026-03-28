@@ -11,3 +11,6 @@ tutorial-env/
 # Coverage
 .coverage
 htmlcov/
+
+# VS Code
+.DS_Store
