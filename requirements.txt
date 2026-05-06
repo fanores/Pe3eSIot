@@ -18,3 +18,4 @@ setuptools==78.1.0
 toml==0.10.2
 urllib3==2.3.0
 pyowm~=3.5.0
+Pillow~=12.2.0
