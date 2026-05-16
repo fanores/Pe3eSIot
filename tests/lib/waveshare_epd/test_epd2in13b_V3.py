@@ -1,20 +1,22 @@
 # content of test_epd2in13b_V3.py
 
 import sys
-from unittest.mock import MagicMock, call
+from unittest.mock import MagicMock, call, patch
+
+from PIL import Image
 
 # Inject the hardware shim into sys.modules before importing the module under test,
 # because epdconfig is a non-existent hardware module loaded at package import time.
+# patch.dict is used so the entry is cleaned up after the import, preventing it from
+# leaking into other test modules that may later import epdconfig legitimately.
 mock_epdconfig = MagicMock()
 mock_epdconfig.RST_PIN = 11
 mock_epdconfig.DC_PIN = 25
 mock_epdconfig.BUSY_PIN = 24
 mock_epdconfig.CS_PIN = 8
-sys.modules['lib.waveshare_epd.epdconfig'] = mock_epdconfig
 
-from lib.waveshare_epd.epd2in13b_V3 import EPD, EPD_WIDTH, EPD_HEIGHT  # noqa: E402
-
-from PIL import Image  # noqa: E402
+with patch.dict(sys.modules, {'lib.waveshare_epd.epdconfig': mock_epdconfig}):
+    from lib.waveshare_epd.epd2in13b_V3 import EPD, EPD_WIDTH, EPD_HEIGHT  # noqa: E402
 
 
 class TestEPD:
@@ -214,6 +216,21 @@ class TestEPD:
         # THEN — delay_ms called at least once (inside the loop)
         assert mock_epdconfig.delay_ms.call_count >= 1
 
+    def test_readbusy_exits_after_finite_busy_readings(self):
+        # GIVEN — device reports busy (0) five times then ready (1).
+        # This documents the loop contract: ReadBusy polls until non-zero with no
+        # built-in cap. A side_effect list that is exhausted without a non-zero
+        # value would raise StopIteration and fail the test, bounding CI behaviour.
+        n_busy = 5
+        mock_epdconfig.digital_read.side_effect = [0] * n_busy + [1]
+        epd = self.epd
+
+        # WHEN
+        epd.ReadBusy()
+
+        # THEN — digital_read called exactly n_busy + 1 times
+        assert mock_epdconfig.digital_read.call_count == n_busy + 1
+
     def test_readbusy_resends_0x71_each_loop_iteration(self):
         # GIVEN — busy once, then ready (so the loop body runs once)
         mock_epdconfig.digital_read.side_effect = [0, 1]
@@ -288,11 +305,32 @@ class TestEPD:
         # WHEN
         epd.init()
 
-        # THEN — all expected command bytes are sent via spi_writebyte
-        spi_calls = mock_epdconfig.spi_writebyte.call_args_list
-        commands_sent = [c.args[0][0] for c in spi_calls]
-        for expected_cmd in [0x04, 0x00, 0x61, 0x50]:
-            assert expected_cmd in commands_sent
+        # THEN — verify the ordered SPI byte stream including all data bytes:
+        #   0x04 (power on)
+        #   0x71 (ReadBusy internal command)
+        #   0x00, 0x0f, 0x89 (panel setting + data)
+        #   0x61, 0x68, 0x00, 0xD4 (resolution + data)
+        #   0x50, 0x77 (VCOM + data)
+        spi_bytes = [c.args[0][0] for c in mock_epdconfig.spi_writebyte.call_args_list]
+
+        def find_subseq(seq, subseq):
+            for i in range(len(seq) - len(subseq) + 1):
+                if seq[i:i + len(subseq)] == subseq:
+                    return i
+            return -1
+
+        i_04 = spi_bytes.index(0x04)
+        i_panel = find_subseq(spi_bytes, [0x00, 0x0f, 0x89])
+        i_res = find_subseq(spi_bytes, [0x61, 0x68, 0x00, 0xD4])
+        i_vcom = find_subseq(spi_bytes, [0x50, 0x77])
+
+        assert i_panel != -1, "Panel setting + data [0x00, 0x0f, 0x89] not found in SPI stream"
+        assert i_res != -1, "Resolution + data [0x61, 0x68, 0x00, 0xD4] not found in SPI stream"
+        assert i_vcom != -1, "VCOM + data [0x50, 0x77] not found in SPI stream"
+        assert i_04 < i_panel < i_res < i_vcom, (
+            "init() command sequence is out of order: "
+            f"0x04@{i_04}, panel@{i_panel}, resolution@{i_res}, VCOM@{i_vcom}"
+        )
 
     # ------------------------------------------------------------------
     # getbuffer — vertical path (image matches width x height)
@@ -357,6 +395,21 @@ class TestEPD:
 
         # THEN — expected buffer size: (width/8) * height = 13 * 212 = 2756
         assert len(buf) == (EPD_WIDTH // 8) * EPD_HEIGHT
+
+    def test_getbuffer_with_wrong_dimensions_silently_returns_blank_buffer(self):
+        # GIVEN — an all-black image whose dimensions match neither portrait nor landscape.
+        # The source has no validation branch for this case and silently falls through,
+        # returning the initial all-0xFF buffer. This test documents that contract so
+        # any future validation change surfaces explicitly as a test failure.
+        image = Image.new('1', (50, 50), 0)
+        epd = self.epd
+
+        # WHEN
+        buf = epd.getbuffer(image)
+
+        # THEN — buffer has correct length and every byte is 0xFF (no pixels written)
+        assert len(buf) == (EPD_WIDTH // 8) * EPD_HEIGHT
+        assert all(b == 0xFF for b in buf)
 
     # ------------------------------------------------------------------
     # getbuffer — horizontal path (image is height x width, rotated)
