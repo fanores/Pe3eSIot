@@ -3,6 +3,7 @@
 
 """DEMO - E-ink Display Manager"""
 import os
+picdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'pic')
 
 import logging
 from lib.waveshare_epd import epd2in13b_V3
