@@ -14,3 +14,7 @@ htmlcov/
 
 # VS Code
 .DS_Store
+
+# Local folders
+.local
+.instructions
