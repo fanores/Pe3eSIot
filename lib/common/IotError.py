@@ -47,3 +47,10 @@ class OwmManagerError(IotError):
 	def __init__(self, message):
 		self.message = message
 
+
+class EinkDisplayManagerError(IotError):
+	"""Exceptions raised for E-Ink Display Manager"""
+
+	def __init__(self, message):
+		self.message = message
+
