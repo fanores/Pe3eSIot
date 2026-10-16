@@ -45,3 +45,23 @@ class EinkDisplayManager:
             18: ImageFont.truetype(font_path, 18),
             28: ImageFont.truetype(font_path, 28),
         }
+
+    def init(self):
+        result = self._epd.init()
+        if result != 0:
+            raise EinkDisplayManagerError(f"EPD init failed with code {result}")
+        self._is_initialized = True
+
+    def clear(self):
+        self._epd.Clear()
+        self._state = {zone: "" for zone in Zone}
+
+    def sleep(self):
+        self._cancel_stale_timer()
+        self._epd.sleep()
+        self._is_initialized = False
+
+    def _cancel_stale_timer(self):
+        if self._stale_timer is not None:
+            self._stale_timer.cancel()
+            self._stale_timer = None
