@@ -29,6 +29,29 @@ _ZONE_CONFIG = {
 
 
 class EinkDisplayManager:
+    """High-level API for the Waveshare 2.13" B V3 e-ink display.
+
+    Manages a 5-zone layout (top_left, top_right, middle_center, bottom_left,
+    bottom_right) and wraps the low-level EPD driver with state tracking and
+    hardware protection guards.
+
+    Use as a context manager to guarantee the display is put to sleep on exit,
+    even if an exception occurs:
+
+        with EinkDisplayManager() as mgr:
+            mgr.init()
+            mgr.set_zone(Zone.TOP_LEFT, "Hello")
+            mgr.set_zone(Zone.BOTTOM_RIGHT, "World")
+            mgr.refresh()
+        # display.sleep() is called automatically here
+
+    For a single-zone update, use the convenience method:
+
+        with EinkDisplayManager() as mgr:
+            mgr.init()
+            mgr.update_zone(Zone.MIDDLE_CENTER, "12:34")
+        # display.sleep() is called automatically here
+    """
 
     def __init__(self):
         self._epd = EPD()
