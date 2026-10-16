@@ -111,3 +111,15 @@ class EinkDisplayManager:
     def update_zone(self, zone: Zone, text: str):
         self.set_zone(zone, text)
         self.refresh()
+
+    def _force_refresh(self):
+        logger.warning("24 h elapsed without a manual refresh; forcing e-ink display refresh!")
+        if self._is_initialized:
+            self.refresh()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self._cancel_stale_timer()
+        self.sleep()
