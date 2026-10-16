@@ -26,3 +26,22 @@ _ZONE_CONFIG = {
     Zone.BOTTOM_LEFT:   {"x": 4,   "y": 99, "font_size": 18, "layer": "black", "anchor": "lb"},
     Zone.BOTTOM_RIGHT:  {"x": 208, "y": 99, "font_size": 18, "layer": "black", "anchor": "rb"},
 }
+
+
+class EinkDisplayManager:
+
+    def __init__(self):
+        self._epd = EPD()
+        self._state = {zone: "" for zone in Zone}
+        self._is_initialized = False
+        self._last_refresh_time = 0.0
+        self._stale_timer = None
+
+        font_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))),
+            "pic", "Font.ttc"
+        )
+        self._fonts = {
+            18: ImageFont.truetype(font_path, 18),
+            28: ImageFont.truetype(font_path, 28),
+        }
