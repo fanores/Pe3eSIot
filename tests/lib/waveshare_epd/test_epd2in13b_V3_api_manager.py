@@ -71,3 +71,19 @@ class TestEinkDisplayManager:
 
         assert exc_info.value.message == "EPD init failed with code -1"
         assert self.mgr._is_initialized is False
+
+    # ------------------------------------------------------------------
+    # clear
+    # ------------------------------------------------------------------
+
+    def test_clear_calls_epd_clear(self):
+        # GIVEN — some zones have text
+        self.mgr._state[Zone.TOP_LEFT] = "Hello"
+        self.mgr._state[Zone.MIDDLE_CENTER] = "World"
+
+        # WHEN
+        self.mgr.clear()
+
+        # THEN
+        self.mock_epd.Clear.assert_called_once()
+        assert all(text == "" for text in self.mgr._state.values())
