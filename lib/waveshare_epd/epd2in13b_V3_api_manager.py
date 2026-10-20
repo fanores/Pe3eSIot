@@ -102,11 +102,22 @@ class EinkDisplayManager:
         indefinitely after a refresh keeps it in a high-voltage state and will cause
         irreversible hardware damage (Waveshare hardware precaution).
         """
+        self._assert_initialized()
+        self._check_refresh_rate()
+        black_img, red_img = self._render_images()
+        self._epd.display(self._epd.getbuffer(black_img), self._epd.getbuffer(red_img))
+        self._last_refresh_time = time.time()
+        self._reschedule_stale_timer()
+
+    def _assert_initialized(self):
         if not self._is_initialized:
             raise EinkDisplayManagerError("Display is not initialized; call init() first")
+
+    def _check_refresh_rate(self):
         if self._last_refresh_time != 0.0 and time.time() - self._last_refresh_time < 180:
             logger.warning("refresh() called within 180 s of the previous refresh")
 
+    def _render_images(self):
         black_img = Image.new('1', (212, 104), 255)
         red_img   = Image.new('1', (212, 104), 255)
         draw = {"black": ImageDraw.Draw(black_img), "red": ImageDraw.Draw(red_img)}
@@ -123,9 +134,9 @@ class EinkDisplayManager:
                 anchor=cfg["anchor"],
             )
 
-        self._epd.display(self._epd.getbuffer(black_img), self._epd.getbuffer(red_img))
-        self._last_refresh_time = time.time()
+        return black_img, red_img
 
+    def _reschedule_stale_timer(self):
         self._cancel_stale_timer()
         self._stale_timer = threading.Timer(86400, self._force_refresh)
         self._stale_timer.daemon = True
