@@ -104,3 +104,29 @@ class TestEinkDisplayManager:
         self.mock_epd.sleep.assert_called_once()
         assert self.mgr._is_initialized is False
         assert self.mgr._stale_timer is None
+
+    # ------------------------------------------------------------------
+    # set_zone
+    # ------------------------------------------------------------------
+
+    def test_set_zone_updates_state(self):
+        # GIVEN
+        zone = Zone.TOP_LEFT
+
+        # WHEN
+        self.mgr.set_zone(zone, "AB")
+
+        # THEN
+        assert self.mgr._state[zone] == "AB"
+        self.mock_epd.display.assert_not_called()
+
+    def test_set_zone_invalid_raises(self):
+        # GIVEN
+        invalid_zone = "not_a_zone"
+
+        # WHEN / THEN
+        import pytest
+        with pytest.raises(EinkDisplayManagerError) as exc_info:
+            self.mgr.set_zone(invalid_zone, "AB")
+
+        assert "not_a_zone" in exc_info.value.message
