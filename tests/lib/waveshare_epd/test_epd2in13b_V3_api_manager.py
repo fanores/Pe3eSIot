@@ -87,3 +87,20 @@ class TestEinkDisplayManager:
         # THEN
         self.mock_epd.Clear.assert_called_once()
         assert all(text == "" for text in self.mgr._state.values())
+
+    # ------------------------------------------------------------------
+    # sleep
+    # ------------------------------------------------------------------
+
+    def test_sleep_calls_epd_sleep(self):
+        # GIVEN — display is initialized and a stale timer is running
+        self.mgr._is_initialized = True
+        self.mgr._stale_timer = MagicMock()
+
+        # WHEN
+        self.mgr.sleep()
+
+        # THEN
+        self.mock_epd.sleep.assert_called_once()
+        assert self.mgr._is_initialized is False
+        assert self.mgr._stale_timer is None
