@@ -44,3 +44,30 @@ class TestEinkDisplayManager:
         assert set(self.mgr._state.keys()) == set(Zone)
         assert all(text == "" for text in self.mgr._state.values())
         assert self.mock_font.truetype.call_count == 2
+
+    # ------------------------------------------------------------------
+    # init
+    # ------------------------------------------------------------------
+
+    def test_init_success(self):
+        # GIVEN
+        self.mock_epd.init.return_value = 0
+
+        # WHEN
+        self.mgr.init()
+
+        # THEN
+        self.mock_epd.init.assert_called_once()
+        assert self.mgr._is_initialized is True
+
+    def test_init_failure(self):
+        # GIVEN
+        self.mock_epd.init.return_value = -1
+
+        # WHEN / THEN
+        import pytest
+        with pytest.raises(EinkDisplayManagerError) as exc_info:
+            self.mgr.init()
+
+        assert exc_info.value.message == "EPD init failed with code -1"
+        assert self.mgr._is_initialized is False
