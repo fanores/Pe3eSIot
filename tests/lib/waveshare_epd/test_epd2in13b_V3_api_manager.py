@@ -230,3 +230,25 @@ class TestEinkDisplayManager:
         mock_threading.Timer.assert_called_once_with(86400, self.mgr._force_refresh)
         assert self.mgr._stale_timer.daemon is True
         self.mgr._stale_timer.start.assert_called_once()
+
+    def test_refresh_reschedules_timer(self):
+        # GIVEN
+        self.mgr._is_initialized = True
+        first_timer = MagicMock()
+        second_timer = MagicMock()
+
+        with patch.object(self.mgr, '_render_images', return_value=(MagicMock(), MagicMock())), \
+             patch.object(epd2in13b_V3_api_manager, 'threading') as mock_threading, \
+             patch.object(epd2in13b_V3_api_manager, 'logger'):
+            # side_effect with a list returns a different mock on each Timer() call,
+            # allowing us to assert on the first and second timer independently
+            mock_threading.Timer.side_effect = [first_timer, second_timer]
+
+            # WHEN — refresh twice
+            self.mgr.refresh()
+            self.mgr.refresh()
+
+        # THEN — first timer was cancelled, second timer is now active
+        first_timer.cancel.assert_called_once()
+        second_timer.start.assert_called_once()
+        assert self.mgr._stale_timer is second_timer
