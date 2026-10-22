@@ -180,3 +180,16 @@ class TestEinkDisplayManager:
         # THEN — warning was logged and display was still called
         mock_logger.warning.assert_called_once()
         self.mock_epd.display.assert_called_once()
+
+    def test_empty_zones_skipped_in_render(self):
+        # GIVEN — all zones are empty (default state from __init__)
+
+        with patch.object(epd2in13b_V3_api_manager, 'ImageDraw') as mock_image_draw:
+            mock_draw = MagicMock()
+            mock_image_draw.Draw.return_value = mock_draw
+
+            # WHEN
+            self.mgr._render_images()
+
+        # THEN — draw.text was never called for any zone
+        mock_draw.text.assert_not_called()
