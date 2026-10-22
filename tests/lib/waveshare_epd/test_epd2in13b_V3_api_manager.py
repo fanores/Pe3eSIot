@@ -1,4 +1,5 @@
 import sys
+import time
 from unittest.mock import MagicMock, patch
 
 from lib.common.IotError import EinkDisplayManagerError
@@ -164,3 +165,18 @@ class TestEinkDisplayManager:
             self.mgr.refresh()
 
         assert "not initialized" in exc_info.value.message
+
+    def test_refresh_rate_warning(self):
+        # GIVEN — a refresh happened 10 s ago (within the 180 s threshold)
+        self.mgr._is_initialized = True
+        self.mgr._last_refresh_time = time.time() - 10
+
+        with patch.object(self.mgr, '_render_images', return_value=(MagicMock(), MagicMock())), \
+             patch.object(epd2in13b_V3_api_manager, 'threading'), \
+             patch.object(epd2in13b_V3_api_manager, 'logger') as mock_logger:
+            # WHEN
+            self.mgr.refresh()
+
+        # THEN — warning was logged and display was still called
+        mock_logger.warning.assert_called_once()
+        self.mock_epd.display.assert_called_once()
