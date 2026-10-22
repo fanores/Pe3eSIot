@@ -154,3 +154,13 @@ class TestEinkDisplayManager:
         )
         assert self.mgr._last_refresh_time != 0.0
         assert self.mgr._stale_timer is not None
+
+    def test_refresh_before_init_raises(self):
+        # GIVEN — display has never been initialized (default state from __init__)
+
+        # WHEN / THEN
+        import pytest
+        with pytest.raises(EinkDisplayManagerError) as exc_info:
+            self.mgr.refresh()
+
+        assert "not initialized" in exc_info.value.message
