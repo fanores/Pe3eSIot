@@ -212,3 +212,21 @@ class TestEinkDisplayManager:
         # THEN — draw.text called once per refresh, proving state persisted
         assert mock_draw.text.call_count == 2
         assert self.mgr._state[Zone.TOP_LEFT] == "Hello"
+
+    # ------------------------------------------------------------------
+    # stale timer
+    # ------------------------------------------------------------------
+
+    def test_refresh_schedules_stale_timer(self):
+        # GIVEN
+        self.mgr._is_initialized = True
+
+        with patch.object(self.mgr, '_render_images', return_value=(MagicMock(), MagicMock())), \
+             patch.object(epd2in13b_V3_api_manager, 'threading') as mock_threading:
+            # WHEN
+            self.mgr.refresh()
+
+        # THEN — a 24 h daemon timer targeting _force_refresh was created and started
+        mock_threading.Timer.assert_called_once_with(86400, self.mgr._force_refresh)
+        assert self.mgr._stale_timer.daemon is True
+        self.mgr._stale_timer.start.assert_called_once()
