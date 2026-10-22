@@ -193,3 +193,22 @@ class TestEinkDisplayManager:
 
         # THEN — draw.text was never called for any zone
         mock_draw.text.assert_not_called()
+
+    def test_state_persists_across_refreshes(self):
+        # GIVEN
+        self.mgr._is_initialized = True
+        self.mgr.set_zone(Zone.TOP_LEFT, "Hello")
+
+        with patch.object(epd2in13b_V3_api_manager, 'ImageDraw') as mock_image_draw, \
+             patch.object(epd2in13b_V3_api_manager, 'threading'), \
+             patch.object(epd2in13b_V3_api_manager, 'logger'):
+            mock_draw = MagicMock()
+            mock_image_draw.Draw.return_value = mock_draw
+
+            # WHEN — refresh twice
+            self.mgr.refresh()
+            self.mgr.refresh()
+
+        # THEN — draw.text called once per refresh, proving state persisted
+        assert mock_draw.text.call_count == 2
+        assert self.mgr._state[Zone.TOP_LEFT] == "Hello"
