@@ -252,3 +252,20 @@ class TestEinkDisplayManager:
         first_timer.cancel.assert_called_once()
         second_timer.start.assert_called_once()
         assert self.mgr._stale_timer is second_timer
+
+    # ------------------------------------------------------------------
+    # _force_refresh
+    # ------------------------------------------------------------------
+
+    def test_force_refresh_calls_refresh_when_initialized(self):
+        # GIVEN
+        self.mgr._is_initialized = True
+
+        with patch.object(self.mgr, 'refresh') as mock_refresh, \
+             patch.object(epd2in13b_V3_api_manager, 'logger') as mock_logger:
+            # WHEN
+            self.mgr._force_refresh()
+
+        # THEN
+        mock_logger.warning.assert_called_once()
+        mock_refresh.assert_called_once()
