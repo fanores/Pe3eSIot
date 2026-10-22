@@ -130,3 +130,27 @@ class TestEinkDisplayManager:
             self.mgr.set_zone(invalid_zone, "AB")
 
         assert "not_a_zone" in exc_info.value.message
+
+    # ------------------------------------------------------------------
+    # refresh
+    # ------------------------------------------------------------------
+
+    def test_refresh_calls_display(self):
+        # GIVEN
+        self.mgr._is_initialized = True
+        mock_black = MagicMock()
+        mock_red = MagicMock()
+        assert self.mgr._stale_timer is None
+
+        with patch.object(self.mgr, '_render_images', return_value=(mock_black, mock_red)), \
+             patch.object(epd2in13b_V3_api_manager, 'threading'):
+            # WHEN
+            self.mgr.refresh()
+
+        # THEN
+        self.mock_epd.display.assert_called_once_with(
+            self.mock_epd.getbuffer.return_value,
+            self.mock_epd.getbuffer.return_value,
+        )
+        assert self.mgr._last_refresh_time != 0.0
+        assert self.mgr._stale_timer is not None
