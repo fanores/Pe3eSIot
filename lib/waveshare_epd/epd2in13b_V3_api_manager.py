@@ -150,6 +150,8 @@ class EinkDisplayManager:
         logger.warning("24 h elapsed without a manual refresh; forcing e-ink display refresh!")
         if self._is_initialized:
             self.refresh()
+        else:
+            logger.warning("Forced refresh ignored — display is not initialized (sleeping).")
 
     def __enter__(self):
         return self
