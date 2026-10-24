@@ -269,3 +269,15 @@ class TestEinkDisplayManager:
         # THEN
         mock_logger.warning.assert_called_once()
         mock_refresh.assert_called_once()
+
+    def test_force_refresh_skips_when_not_initialized(self):
+        # GIVEN — display is not initialized (default state from __init__)
+
+        with patch.object(self.mgr, 'refresh') as mock_refresh, \
+             patch.object(epd2in13b_V3_api_manager, 'logger') as mock_logger:
+            # WHEN
+            self.mgr._force_refresh()
+
+        # THEN — both warnings logged, refresh skipped
+        assert mock_logger.warning.call_count == 2
+        mock_refresh.assert_not_called()
