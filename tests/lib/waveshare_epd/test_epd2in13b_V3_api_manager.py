@@ -300,3 +300,35 @@ class TestEinkDisplayManager:
         assert self.mgr._state[Zone.TOP_LEFT] == "Hi"
         mock_refresh.assert_called_once()
         self.mock_epd.display.assert_called_once()
+
+    # ------------------------------------------------------------------
+    # context manager
+    # ------------------------------------------------------------------
+
+    def test_context_manager_calls_sleep_on_normal_exit(self):
+        # GIVEN
+        self.mgr._stale_timer = MagicMock()
+
+        with patch.object(self.mgr, 'sleep') as mock_sleep:
+            # WHEN
+            with self.mgr:
+                pass
+
+        # THEN
+        mock_sleep.assert_called_once()
+        assert self.mgr._stale_timer is None
+
+    def test_context_manager_calls_sleep_on_exception(self):
+        # GIVEN
+        import pytest
+        self.mgr._stale_timer = MagicMock()
+
+        with patch.object(self.mgr, 'sleep') as mock_sleep:
+            # WHEN — exception raised inside the with block
+            with pytest.raises(RuntimeError):
+                with self.mgr:
+                    raise RuntimeError("test error")
+
+        # THEN — sleep still called and timer cancelled despite the exception
+        mock_sleep.assert_called_once()
+        assert self.mgr._stale_timer is None
