@@ -281,3 +281,22 @@ class TestEinkDisplayManager:
         # THEN — both warnings logged, refresh skipped
         assert mock_logger.warning.call_count == 2
         mock_refresh.assert_not_called()
+
+    # ------------------------------------------------------------------
+    # update_zone
+    # ------------------------------------------------------------------
+
+    def test_update_zone_calls_display(self):
+        # GIVEN
+        self.mgr._is_initialized = True
+
+        with patch.object(self.mgr, '_render_images', return_value=(MagicMock(), MagicMock())), \
+             patch.object(epd2in13b_V3_api_manager, 'threading'), \
+             patch.object(self.mgr, 'refresh', wraps=self.mgr.refresh) as mock_refresh:
+            # WHEN
+            self.mgr.update_zone(Zone.TOP_LEFT, "Hi")
+
+        # THEN
+        assert self.mgr._state[Zone.TOP_LEFT] == "Hi"
+        mock_refresh.assert_called_once()
+        self.mock_epd.display.assert_called_once()
